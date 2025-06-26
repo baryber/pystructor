@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Pystructor"
+version = "0.1.0"
+authors = [
+    { name = "SadZip", email = "sssad@zippp.ru" },
+]
+description = "A Python library inspired by TypeScript, featuring handy decorators for transforming Pydantic models and automatic CRUD schema generation."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Framework :: Pydantic :: 2",
+    "Topic :: Software Development :: Code Generators",
+]
+dependencies = [
+    "sqlmodel>=0.0.24",
+    "pydantic>=2.0.0,<3.0.0",
+    "sqlalchemy>=2.0,<3.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/preposition17/pystructor"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pystructor*"]
+
+[tool.pytest]
+strict_markers = true
+python_files = "tests/test_*.py"
+
+[tool.ruff]
+# Стиль
+line-length = 100
+indent-width = 4
+target-version = "py310"
+respect-gitignore = true
+# Включенные правила линтинга (можно расширять)
+select = [
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade (modern python)
+    "B",    # bugbear (ловит баги)
+    "A",    # flake8-builtins
+    "C4",   # flake8-comprehensions
+]
+# Отключить E501 (ограничение на длину строки, если не хочешь им пользоваться)
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+plugins = ["pydantic.mypy"]
+show_error_codes = true
+warn_unused_configs = true
+ignore_missing_imports = true

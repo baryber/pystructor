@@ -1,0 +1,18 @@
+root_dir: "."
+
+patterns:
+  - "*.py"
+  - "pystructor/**/*.py"
+  - "tests/**/*.py"
+  - "pyproject.toml"
+  - "pytest.ini"
+  - "requirements.txt"
+
+
+ignore_patterns:
+  - "venv"
+  - "trash"
+  - "**/__pycache__/"
+  - "*.log"
+
+ignore_empty_init_py: true
