@@ -24,7 +24,7 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/preposition17/pystructor"
+"Homepage" = "https://github.com/baryber/pystructor"
 
 [project.optional-dependencies]
 test = [

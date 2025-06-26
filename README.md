@@ -29,16 +29,16 @@ Pystructor is a Python library inspired by TypeScript, featuring handy decorator
 You can install Pystructor directly from its Git repository:
 
 ```bash
-pip install git+https://github.com/preposition17/pystructor.git
+pip install git+https://github.com/baryber/pystructor.git
 ```
 
 If you want to install a specific branch, tag, or commit:
 ```bash
-# Install from 'main' branch
-pip install git+https://github.com/preposition17/pystructor.git@main
+# Install from 'master' branch
+pip install git+https://github.com/baryber/pystructor.git@master
 
 # Install version 'v0.1.0' (if tagged)
-pip install git+https://github.com/preposition17/pystructor.git@v0.1.0
+pip install git+https://github.com/baryber/pystructor.git@v0.1.0
 ```
 
 ## Usage
@@ -200,4 +200,4 @@ Pystructor is licensed under the [MIT License](LICENSE). (Note: You'll need to a
 
 ## Project Links
 
-*   Homepage / Repository: [https://github.com/preposition17/pystructor](https://github.com/preposition17/pystructor)
+*   Homepage / Repository: [https://github.com/baryber/pystructor](https://github.com/baryber/pystructor)
