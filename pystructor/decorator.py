@@ -1,3 +1,4 @@
+import inspect
 from typing import (
     Any,
     TypeVar,
@@ -10,7 +11,14 @@ from pydantic_core import PydanticUndefined
 from sqlmodel import SQLModel
 from sqlmodel.main import FieldInfo
 
-from .utils import get_fields
+from .utils import get_fields, finalize_model, get_validators
+
+
+try:
+    from fastapi import Form
+except ImportError:
+    Form = None
+
 
 ModelT = TypeVar("ModelT", BaseModel, SQLModel)
 
@@ -34,7 +42,7 @@ def partial(model_cls: type[ModelT]):
             finfo.default = None
             base_fields[name] = (typ, finfo)  # type: ignore
 
-        return create_model(
+        model = create_model(
             new_cls.__name__,
             __doc__=new_cls.__doc__,
             __base__=new_cls,
@@ -42,8 +50,13 @@ def partial(model_cls: type[ModelT]):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
+        return finalize_model(model, model_cls, new_cls)  # type: ignore[return-value]
 
     return decorator
 
@@ -69,8 +82,43 @@ def omit(model_cls: type[ModelT], *fields: str):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
+
+    return decorator
+
+
+def copy(model_cls: type[ModelT]):
+    def decorator(new_cls: type[BaseModel | SQLModel]) -> type[ModelT]:
+
+        if not issubclass(model_cls, (BaseModel, SQLModel)):
+            raise TypeError(f"{model_cls} must be subclass of {BaseModel} or {SQLModel}")
+
+        if not issubclass(new_cls, (BaseModel, SQLModel)):
+            raise TypeError(f"{new_cls} must be subclass of {BaseModel} or {SQLModel}")
+
+        base_fields = get_fields(model_cls)
+        new_fields = get_fields(new_cls)
+
+        model = create_model(
+            new_cls.__name__,
+            __doc__=new_cls.__doc__,
+            __base__=new_cls,
+            __module__=new_cls.__module__,
+            **{
+                **base_fields,
+                **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
+            }
+        )
+        return finalize_model(model, model_cls, new_cls)  # type: ignore[return-value]
 
     return decorator
 
@@ -96,6 +144,10 @@ def pick(model_cls: type[ModelT], *fields: str):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -126,6 +178,10 @@ def required(model_cls: type[ModelT]):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -153,6 +209,10 @@ def readonly(model_cls: type[ModelT]):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -196,6 +256,10 @@ def non_nullable(model_cls: type[ModelT]):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -231,6 +295,10 @@ def deep_partial(model_cls: type[ModelT]):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -275,6 +343,10 @@ def exclude_type(model_cls: type[ModelT], type_: Any):
             **{
                 **base_fields,
                 **new_fields
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
@@ -301,19 +373,19 @@ def merge(model_cls: type[ModelT], other_cls: type[ModelT]):
                 **base_fields,
                 **other_fields,
                 **new_fields,
+            },
+            __validators__={
+                **get_validators(model_cls),
+                **get_validators(new_cls)
             }
         )
 
     return decorator
 
 
-# --- Ideas ---
-
-
 def as_form(model_cls: type[ModelT]):
-    import inspect
-
-    from fastapi import Form
+    if Form is None:
+        raise ImportError("FastAPI is required to use the `as_form` decorator, run `pip isntall fastapi` command.")
 
     if not issubclass(model_cls, (BaseModel, SQLModel)):
         raise TypeError(f"{model_cls} must be subclass of {BaseModel} or {SQLModel}")

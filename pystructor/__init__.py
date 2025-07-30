@@ -12,7 +12,15 @@ from .generator import (
 from .decorator import (
     partial,
     omit,
-    pick
+    copy,
+    pick,
+    required,
+    readonly,
+    non_nullable,
+    deep_partial,
+    exclude_type,
+    merge,
+    as_form
 )
 
 __all__ = [
@@ -27,5 +35,14 @@ __all__ = [
 
     "partial",
     "omit",
-    "pick"
+    "pick",
+    "copy",
+    "pick",
+    "required",
+    "readonly",
+    "non_nullable",
+    "deep_partial",
+    "exclude_type",
+    "merge",
+    "as_form",
 ]
