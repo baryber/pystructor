@@ -3,6 +3,7 @@ from sqlmodel import create_engine
 from sqlmodel import SQLModel, Session, Field as SQLModelField
 from sqlmodel._compat import SQLModelConfig
 from pydantic import BaseModel, Field as PydanticField
+from pydantic import field_validator, model_validator
 
 
 @pytest.fixture(scope="session")
@@ -31,6 +32,19 @@ class _FooSQLModelBase(SQLModel):
         from_attributes=True
     )
 
+    @field_validator("name")
+    def validate_name(cls, value: str) -> str:
+        if value == "admin":
+            raise ValueError("This name is not allowed")
+        return value
+
+    @model_validator(mode="before")
+    def validate_email(cls, values: dict) -> dict:
+        email = values.get("email")
+        if email.startswith("admin@"):
+            raise ValueError("This email is not allowed")
+        return values
+
 
 class _FooSQLModelTable(_FooSQLModelBase, table=True):
     __tablename__ = "foo_table"
@@ -45,6 +59,19 @@ class _FooPydanticModel(BaseModel):
     email: str = PydanticField(..., max_length=50, description="Email Address")
 
     constraint_positive_int: int | None = PydanticField(default=10, gt=0)
+
+    @field_validator("name")
+    def validate_name(cls, value: str) -> str:
+        if value == "admin":
+            raise ValueError("This name is not allowed")
+        return value
+
+    @model_validator(mode="before")
+    def validate_email(cls, values: dict) -> dict:
+        email = values.get("email")
+        if email.startswith("admin@"):
+            raise ValueError("This email is not allowed")
+        return values
 
 
 @pytest.fixture
